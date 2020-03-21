@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class TileClick : MonoBehaviour
-{
+public class TileClick : MonoBehaviour {
   public Tilemap tileMap;
   public TileBase swappedTile;
   public TileBase evilTile;
 
   // Update is called once per frame
-  void Update()
-  {
-    if (Input.GetMouseButtonDown(0))
-    {
+  void Update() {
+    if (Input.GetMouseButtonDown(0)) {
       Vector3 position = Input.mousePosition;
       Vector3Int tilePos = tileMap.WorldToCell(Camera.main.ScreenToWorldPoint(position));
       Debug.Log(tilePos);
@@ -21,8 +18,7 @@ public class TileClick : MonoBehaviour
 
       //tileMap.SetTile(tilePos, swappedTile);
     }
-    if (Input.GetMouseButtonDown(1))
-    {
+    if (Input.GetMouseButtonDown(1)) {
       Vector3 position = Input.mousePosition;
       Vector3Int tilePos = tileMap.WorldToCell(Camera.main.ScreenToWorldPoint(position));
       Debug.Log(tilePos);
@@ -30,36 +26,29 @@ public class TileClick : MonoBehaviour
 
       //tileMap.SetTile(tilePos, swappedTile);
     }
-    if (Input.GetKeyDown("space"))
-    {
+    if (Input.GetKeyDown("space")) {
       doNextTurn();
     }
   }
 
-  void doNextTurn()
-  {
+  void doNextTurn() {
     Vector3Int center = new Vector3Int(5, 4, 0);
     paintCircle(center, 2);
   }
 
-  void paintCircle(Vector3Int center, int radius)
-  {
+  void paintCircle(Vector3Int center, int radius) {
     Vector3Int[] positions = getPostionsInRadius(center, radius);
     TileBase[] tileArray = new TileBase[positions.Length];
     tileArray.Fill(evilTile);
     tileMap.SetTiles(positions, tileArray);
   }
 
-  Vector3Int[] getPostionsInRadius(Vector3Int center, int range)
-  {
+  Vector3Int[] getPostionsInRadius(Vector3Int center, int range) {
     List<Vector3Int> postions = new List<Vector3Int>();
-    for (int dx = -range; dx <= range; dx++)
-    {
-      for (int dy = -range; dy <= range; dy++)
-      {
+    for (int dx = -range; dx <= range; dx++) {
+      for (int dy = -range; dy <= range; dy++) {
         Vector3Int postion = new Vector3Int(center.x + dx, center.y + dy, 0);
-        if (distance(postion.x, postion.y, center.x, center.y) <= range)
-        {
+        if (distance(postion.x, postion.y, center.x, center.y) <= range) {
           postions.Add(postion);
         }
       }
@@ -67,8 +56,7 @@ public class TileClick : MonoBehaviour
     return postions.ToArray();
   }
 
-  int distance(int x0, int y0, int x1, int y1)
-  {
+  int distance(int x0, int y0, int x1, int y1) {
     int cx0 = x0 - (y0 - (y0 & 1)) / 2;
     int cz0 = y0;
     int cy0 = -cx0 - cz0;
@@ -83,12 +71,9 @@ public class TileClick : MonoBehaviour
 
 }
 
-public static class ArrayExtensions
-{
-  public static void Fill<T>(this T[] originalArray, T with)
-  {
-    for (int i = 0; i < originalArray.Length; i++)
-    {
+public static class ArrayExtensions {
+  public static void Fill<T>(this T[] originalArray, T with) {
+    for (int i = 0; i < originalArray.Length; i++) {
       originalArray[i] = with;
     }
   }
