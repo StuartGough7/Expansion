@@ -5,39 +5,36 @@ using UnityEngine.Tilemaps;
 
 public class TileClick : MonoBehaviour {
   public Tilemap tileMap;
-  public TileBase swappedTile;
   public TileBase evilTile;
+  public TileBase goodTile;
+  Vector3Int goodStartPosition;
+  Vector3Int evilStartPosition;
+  public Vector2Int minTilePosition;
+  public Vector2Int maxTilePosition;
+  int turnCount = 0;
 
-  // Update is called once per frame
+  void Start() {
+    goodStartPosition = new Vector3Int(-3, 8, 0);
+    evilStartPosition = new Vector3Int(3, -5, 0);
+    tileMap.SetTile(goodStartPosition, goodTile);
+    tileMap.SetTile(evilStartPosition, evilTile);
+  }
+
   void Update() {
-    if (Input.GetMouseButtonDown(0)) {
-      Vector3 position = Input.mousePosition;
-      Vector3Int tilePos = tileMap.WorldToCell(Camera.main.ScreenToWorldPoint(position));
-      Debug.Log(tilePos);
-      paintCircle(tilePos, 1);
-
-      //tileMap.SetTile(tilePos, swappedTile);
-    }
-    if (Input.GetMouseButtonDown(1)) {
-      Vector3 position = Input.mousePosition;
-      Vector3Int tilePos = tileMap.WorldToCell(Camera.main.ScreenToWorldPoint(position));
-      Debug.Log(tilePos);
-      paintCircle(tilePos, 2);
-
-      //tileMap.SetTile(tilePos, swappedTile);
-    }
     if (Input.GetKeyDown("space")) {
       doNextTurn();
     }
   }
 
   void doNextTurn() {
-    Vector3Int center = new Vector3Int(5, 4, 0);
-    paintCircle(center, 2);
+    paintCircle(evilStartPosition, turnCount + 1);
+    paintCircle(goodStartPosition, turnCount + 1);
+    turnCount += 1;
   }
 
   void paintCircle(Vector3Int center, int radius) {
     Vector3Int[] positions = getPostionsInRadius(center, radius);
+
     TileBase[] tileArray = new TileBase[positions.Length];
     tileArray.Fill(evilTile);
     tileMap.SetTiles(positions, tileArray);
@@ -49,7 +46,9 @@ public class TileClick : MonoBehaviour {
       for (int dy = -range; dy <= range; dy++) {
         Vector3Int postion = new Vector3Int(center.x + dx, center.y + dy, 0);
         if (distance(postion.x, postion.y, center.x, center.y) <= range) {
-          postions.Add(postion);
+          if (minTilePosition.x <= postion.x && postion.x <= maxTilePosition.x && minTilePosition.y <= postion.y && postion.y <= maxTilePosition.y) {
+            postions.Add(postion);
+          }
         }
       }
     }
