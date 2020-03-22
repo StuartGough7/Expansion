@@ -7,10 +7,12 @@ public class TileClick : MonoBehaviour {
   public Tilemap tileMap;
   public TileBase evilTile;
   public TileBase goodTile;
+  public TileBase impassableTerrain;
   Vector3Int goodStartPosition;
   Vector3Int evilStartPosition;
   public Vector2Int minTilePosition;
   public Vector2Int maxTilePosition;
+
   int turnCount = 0;
 
   void Start() {
@@ -33,7 +35,7 @@ public class TileClick : MonoBehaviour {
   }
 
   void paintCircle(Vector3Int center, int radius) {
-    Vector3Int[] positions = getPostionsInRadius(center, radius);
+    Vector3Int[] positions = getPostionsInRadiusExludingImpassableTerrain(center, radius);
 
     TileBase[] tileArray = new TileBase[positions.Length];
     tileArray.Fill(evilTile);
@@ -48,6 +50,23 @@ public class TileClick : MonoBehaviour {
         if (distance(postion.x, postion.y, center.x, center.y) <= range) {
           if (minTilePosition.x <= postion.x && postion.x <= maxTilePosition.x && minTilePosition.y <= postion.y && postion.y <= maxTilePosition.y) {
             postions.Add(postion);
+          }
+        }
+      }
+    }
+    return postions.ToArray();
+  }
+
+  Vector3Int[] getPostionsInRadiusExludingImpassableTerrain(Vector3Int center, int range) {
+    List<Vector3Int> postions = new List<Vector3Int>();
+    for (int dx = -range; dx <= range; dx++) {
+      for (int dy = -range; dy <= range; dy++) {
+        Vector3Int postion = new Vector3Int(center.x + dx, center.y + dy, 0);
+        if (distance(postion.x, postion.y, center.x, center.y) <= range) {
+          if (minTilePosition.x <= postion.x && postion.x <= maxTilePosition.x && minTilePosition.y <= postion.y && postion.y <= maxTilePosition.y) {
+            if (tileMap.GetTile(postion) != impassableTerrain) {
+              postions.Add(postion);
+            }
           }
         }
       }
